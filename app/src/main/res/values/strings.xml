@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Pelaporan Bakesbangpol Malang</string>
+    <string name="mainPelaporan">PELAPORAN</string>
+    <string name="mainMalang">MALANG</string>
+    <string name="mainBakesbangpol">BAKESBANGPOL</string>
+    <string name="mainForAdmin">for admin</string>
+    <string name="loginLogin">Login</string>
+    <string name="loginHi">Hi,</string>
+    <string name="loginWelcome">Welcome</string>
+    <string name="loginPleaseSignIn">Please sign in to continue</string>
+    <string name="loginEmail">Email</string>
+    <string name="loginPassword">Password</string>
+    <string name="loginLupaPassword">Lupa password?</string>
+    <string name="loginLoginButtonText">LOGIN</string>
+    <string name="forgotSendRequest">Reset Password</string>
+    <string name="forgotForgot">Forgot</string>
+    <string name="forgotInstructionsDetail">Masukkan email anda, dan kami akan mengirim link untuk mereset password anda</string>
+    <string name="forgotPasswordText">Password</string>
+    <string name="forgotUnlockedIcon">unlocked icon</string>
+</resources>

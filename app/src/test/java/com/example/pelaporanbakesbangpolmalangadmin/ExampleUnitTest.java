@@ -1,4 +1,4 @@
-package com.example.pelaporanbakesbangpolmalangadmin;
+package com.example.pelaporanbakesbangpolmalang;
 
 import org.junit.Test;
 

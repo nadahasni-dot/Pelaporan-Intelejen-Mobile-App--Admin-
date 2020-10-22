@@ -37,9 +37,10 @@ public class AddUserActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        // super.onBackPressed();
 
         Intent toHomeUser = new Intent(AddUserActivity.this, HomeActivity.class);
+        toHomeUser.putExtra("GOTO_FRAGMENT", "PENGGUNA");
         startActivity(toHomeUser);
         finish();
     }

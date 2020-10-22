@@ -103,6 +103,7 @@ public class DetailUserActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent toHomeUser = new Intent(DetailUserActivity.this, HomeActivity.class);
+        toHomeUser.putExtra("GOTO_FRAGMENT", "PENGGUNA");
         startActivity(toHomeUser);
         finish();
     }

@@ -6,27 +6,28 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class DetailLaporanActivity extends AppCompatActivity {
-    Toolbar detailLaporanToolbar;
+public class DetailPemberitahuanActivity extends AppCompatActivity {
+    Toolbar detailPemberitahuanToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_laporan);
+        setContentView(R.layout.activity_detail_pemberitahuan);
 
-        detailLaporanToolbar = findViewById(R.id.detailLaporanToolbar);
+        detailPemberitahuanToolbar = findViewById(R.id.detailPemberitahuanToolbar);
+
         // setup toolbar
-        setSupportActionBar(detailLaporanToolbar);
+        setSupportActionBar(detailPemberitahuanToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
     public void onBackPressed() {
-        //        super.onBackPressed();
+        // super.onBackPressed();
 
-        Intent toHomeUser = new Intent(DetailLaporanActivity.this, HomeActivity.class);
-        toHomeUser.putExtra("GOTO_FRAGMENT", "LAPORAN");
+        Intent toHomeUser = new Intent(DetailPemberitahuanActivity.this, HomeActivity.class);
+        toHomeUser.putExtra("GOTO_FRAGMENT", "PEMBERITAHUAN");
         startActivity(toHomeUser);
         finish();
     }

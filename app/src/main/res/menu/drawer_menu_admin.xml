@@ -21,6 +21,11 @@
             android:icon="@drawable/ic_people"
             android:title="@string/nav_user" />
 
+        <item
+            android:id="@+id/menu_pemberitahuan"
+            android:icon="@drawable/ic_notification"
+            android:title="@string/nav_pemberitahuan" />
+
     </group>
 
     <group

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutAddUser"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.pelaporanbakesbangpolmalang.AddUserActivity">
@@ -54,7 +55,6 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPenggunaEmailInput"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                Of="@id/addPenggunaUsernameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
@@ -75,6 +75,28 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/addPenggunaTeleponInput"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:hint="Telepon"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addPenggunaEmailInput"
+                app:startIconDrawable="@drawable/ic_baseline_phone_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="phone" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPenggunaNIKInput"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 Of="@id/addPenggunaUsernameInput"
@@ -87,7 +109,7 @@
                 app:boxStrokeColor="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addPenggunaEmailInput"
+                app:layout_constraintTop_toBottomOf="@+id/addPenggunaTeleponInput"
                 app:startIconDrawable="@drawable/ic_baseline_credit_card_24">
 
                 <com.google.android.material.textfield.TextInputEditText

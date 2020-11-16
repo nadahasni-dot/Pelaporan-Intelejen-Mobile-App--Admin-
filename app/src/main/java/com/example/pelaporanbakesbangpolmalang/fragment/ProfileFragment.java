@@ -1,17 +1,41 @@
 package com.example.pelaporanbakesbangpolmalang.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.ClientError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
+import com.example.pelaporanbakesbangpolmalang.DetailUserActivity;
 import com.example.pelaporanbakesbangpolmalang.R;
+import com.example.pelaporanbakesbangpolmalang.helper.ApiHelper;
+import com.example.pelaporanbakesbangpolmalang.helper.SessionHelper;
+import com.example.pelaporanbakesbangpolmalang.helper.VolleyHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,21 +48,24 @@ public class ProfileFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     // View Widget
     FloatingActionButton fabEdit;
     FloatingActionButton fabSave;
     FloatingActionButton fabCancelEdit;
-
     TextInputLayout inputUsername;
     TextInputLayout inputEmail;
     TextInputLayout inputNIK;
     TextInputLayout inputPhone;
     TextInputLayout inputAlamat;
+    CircleImageView profileImage;
+    SessionHelper sessionHelper;
+    RequestQueue requestQueue;
+    ProgressDialog progressDialog;
+    TextView usernameText, levelText, countUsersText, countLaporanText;
+    String idUser, username, level, email, nik, telepon, alamat, countUsers, countLaporan, image;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -78,10 +105,23 @@ public class ProfileFragment extends Fragment {
 
         init(view);
 
+        getProfile();
+
         return view;
     }
 
     private void init(View view) {
+        sessionHelper = new SessionHelper(getContext());
+        requestQueue = VolleyHelper.getInstance(getContext()).getRequestQueue();
+        progressDialog = new ProgressDialog(getContext());
+
+        profileImage = view.findViewById(R.id.profileImage);
+
+        usernameText = view.findViewById(R.id.profileUsername);
+        levelText = view.findViewById(R.id.profileLevel);
+        countUsersText = view.findViewById(R.id.profileTotalUser);
+        countLaporanText = view.findViewById(R.id.profileTotalLaporan);
+
         fabEdit = view.findViewById(R.id.profileFABEdit);
         fabCancelEdit = view.findViewById(R.id.profileFABCancelEdit);
         fabSave = view.findViewById(R.id.profileFABSave);
@@ -91,6 +131,16 @@ public class ProfileFragment extends Fragment {
         inputNIK = view.findViewById(R.id.profileNIKInput);
         inputPhone = view.findViewById(R.id.profilePhoneInput);
         inputAlamat = view.findViewById(R.id.profileInputAlamat);
+
+        idUser = sessionHelper.getIdUser();
+
+        if (sessionHelper.getLevel().equals("1")) {
+            level = "ADMIN";
+        } else {
+            level = "USER";
+        }
+
+        levelText.setText(level);
 
         fabEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +177,8 @@ public class ProfileFragment extends Fragment {
         fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                updateUserById();
+
                 fabSave.setVisibility(View.GONE);
                 fabCancelEdit.setVisibility(View.GONE);
                 fabEdit.setVisibility(View.VISIBLE);
@@ -137,8 +189,148 @@ public class ProfileFragment extends Fragment {
                 inputPhone.getEditText().setEnabled(false);
                 inputAlamat.getEditText().setEnabled(false);
 
-                Toast.makeText(getActivity(), "Data saved", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Data saved", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getProfile() {
+        progressDialog.setMessage("Sedang memproses..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        StringRequest getProfile = new StringRequest(Request.Method.GET, ApiHelper.USER_PROFILE_BY_ID_USER + idUser, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                try {
+                    JSONObject responseObject = new JSONObject(response);
+
+                    if (responseObject.getString("status").equals("false")) {
+                        Toast.makeText(getContext(), responseObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    JSONObject data = responseObject.getJSONObject("data");
+                    JSONObject user = data.getJSONObject("user");
+
+                    countUsers = data.getString("count_users");
+                    countLaporan = data.getString("count_laporan");
+
+                    username = user.getString("username");
+                    email = user.getString("email");
+                    nik = user.getString("nik");
+                    telepon = user.getString("telepon");
+                    alamat = user.getString("alamat");
+                    image = ApiHelper.ASSETS_URL + user.getString("foto");
+
+                    Glide.with(getContext()).load(image).into(profileImage);
+
+                    inputUsername.getEditText().setText(username);
+                    inputEmail.getEditText().setText(email);
+                    inputNIK.getEditText().setText(nik);
+                    inputPhone.getEditText().setText(telepon);
+                    inputAlamat.getEditText().setText(alamat);
+
+                    usernameText.setText(username);
+                    countUsersText.setText(countUsers);
+                    countLaporanText.setText(countLaporan);
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = "Terjadi error. Coba beberapa saat lagi.";
+
+                if (error instanceof NetworkError) {
+                    message = "Tidak dapat terhubung ke internet. Harap periksa koneksi anda.";
+                } else if (error instanceof AuthFailureError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof ClientError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof NoConnectionError) {
+                    message = "Tidak ada koneksi internet. Harap periksa koneksi anda.";
+                } else if (error instanceof TimeoutError) {
+                    message = "Connection Time Out. Harap periksa koneksi anda.";
+                }
+
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+                progressDialog.dismiss();
+            }
+        });
+
+        requestQueue.add(getProfile);
+    }
+
+    private void updateUserById() {
+        progressDialog.setMessage("Sedang memproses..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        StringRequest updateRequest = new StringRequest(Request.Method.PUT, ApiHelper.AUTH_UPDATE_USER, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                try {
+                    JSONObject responseObject = new JSONObject(response);
+
+                    if (responseObject.getString("status").equals("false")) {
+                        Toast.makeText(getContext(), responseObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    JSONObject data = responseObject.getJSONObject("data");
+
+                    Toast.makeText(getContext(), responseObject.getString("message"), Toast.LENGTH_SHORT).show();
+
+                    usernameText.setText(data.getString("username"));
+                    inputUsername.getEditText().setText(data.getString("username"));
+                    inputEmail.getEditText().setText(data.getString("email"));
+                    inputNIK.getEditText().setText(data.getString("nik"));
+                    inputPhone.getEditText().setText(data.getString("telepon"));
+                    inputAlamat.getEditText().setText(data.getString("alamat"));
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = "Terjadi error. Coba beberapa saat lagi.";
+
+                if (error instanceof NetworkError) {
+                    message = "Tidak dapat terhubung ke internet. Harap periksa koneksi anda.";
+                } else if (error instanceof AuthFailureError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof ClientError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof NoConnectionError) {
+                    message = "Tidak ada koneksi internet. Harap periksa koneksi anda.";
+                } else if (error instanceof TimeoutError) {
+                    message = "Connection Time Out. Harap periksa koneksi anda.";
+                }
+
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+                progressDialog.dismiss();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("id_user", idUser);
+                params.put("username", inputUsername.getEditText().getText().toString().trim());
+                params.put("email", inputEmail.getEditText().getText().toString().trim());
+                params.put("nik", inputNIK.getEditText().getText().toString().trim());
+                params.put("telepon", inputPhone.getEditText().getText().toString().trim());
+                params.put("alamat", inputAlamat.getEditText().getText().toString().trim());
+                return params;
+            }
+        };
+
+        requestQueue.add(updateRequest);
     }
 }

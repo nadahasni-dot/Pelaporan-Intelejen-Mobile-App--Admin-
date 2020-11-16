@@ -2,22 +2,38 @@ package com.example.pelaporanbakesbangpolmalang.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
+import com.android.volley.AuthFailureError;
+import com.android.volley.ClientError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.pelaporanbakesbangpolmalang.AddLaporanActivity;
 import com.example.pelaporanbakesbangpolmalang.DetailLaporanActivity;
 import com.example.pelaporanbakesbangpolmalang.R;
 import com.example.pelaporanbakesbangpolmalang.adapter.LaporanAdapter;
+import com.example.pelaporanbakesbangpolmalang.helper.ApiHelper;
+import com.example.pelaporanbakesbangpolmalang.helper.VolleyHelper;
 import com.example.pelaporanbakesbangpolmalang.model.LaporanItem;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -44,6 +60,9 @@ public class LaporanFragment extends Fragment {
     private RecyclerView laporanRecyclerView;
     private LaporanAdapter laporanAdapter;
     private RecyclerView.LayoutManager laporanLayoutManager;
+    private RequestQueue requestQueue;
+    private LinearLayout errorLayout, loadingLayout;
+    private MaterialButton cobaButtonLaporan;
 
     private FloatingActionButton laporanaFABAddlaporan;
 
@@ -83,11 +102,25 @@ public class LaporanFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_laporan, container, false);
 
+        init(view);
+
+        return view;
+    }
+
+    private void init(View view) {
+        cobaButtonLaporan = view.findViewById(R.id.button_coba_laporan);
+        loadingLayout = view.findViewById(R.id.loading_laporan_layout);
+        errorLayout = view.findViewById(R.id.error_laporan_layout);
         laporanaFABAddlaporan = view.findViewById(R.id.laporanFABAddLaporan);
+        requestQueue = VolleyHelper.getInstance(getContext()).getRequestQueue();
+        //  setup recycler view
+        laporanRecyclerView = view.findViewById(R.id.recyclerViewLaporanAdmin);
+        laporanRecyclerView.setHasFixedSize(true);
+
         laporanaFABAddlaporan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "tombol di klik", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "tombol di klik", Toast.LENGTH_SHORT).show();
 
                 Intent toAddLaporan = new Intent(getActivity().getApplicationContext(), AddLaporanActivity.class);
                 startActivity(toAddLaporan);
@@ -95,36 +128,101 @@ public class LaporanFragment extends Fragment {
             }
         });
 
-        //  setup recycler view
-        laporanList = new ArrayList<>();
-        laporanList.add(new LaporanItem(1, 1, "Laporan 1", "Deskripsi 1", "1 Januari 2020"));
-        laporanList.add(new LaporanItem(2, 2, "Laporan 2", "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ips", "2 Januari 2020"));
-        laporanList.add(new LaporanItem(3, 3, "Laporan 3", "Deskripsi 3", "3 Januari 2020"));
-        laporanList.add(new LaporanItem(4, 4, "Laporan 4", "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ips", "4 Januari 2020"));
-        laporanList.add(new LaporanItem(5, 5, "Laporan 5", "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ips", "5 Januari 2020"));
-        laporanList.add(new LaporanItem(6, 6, "Laporan 6", "Deskripsi 6", "6 Januari 2020"));
-        laporanList.add(new LaporanItem(7, 7, "Laporan 7", "Deskripsi 7", "7 Januari 2020"));
-        laporanList.add(new LaporanItem(8, 8, "Laporan 8", "Deskripsi 8", "8 Januari 2020"));
-
-        laporanRecyclerView = view.findViewById(R.id.recyclerViewLaporanAdmin);
-        laporanRecyclerView.setHasFixedSize(true);
-        laporanLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        laporanAdapter = new LaporanAdapter(laporanList);
-
-        laporanRecyclerView.setLayoutManager(laporanLayoutManager);
-        laporanRecyclerView.setAdapter(laporanAdapter);
-
-        // handle onclick card
-        laporanAdapter.setOnItemCliclListener(new LaporanAdapter.OnItemClickListener() {
+        cobaButtonLaporan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(int position) {
-                Toast.makeText(getActivity().getApplicationContext(), "ID: " + laporanList.get(position).getJudul(), Toast.LENGTH_SHORT).show();
-                Intent toDetail = new Intent(getActivity().getApplicationContext(), DetailLaporanActivity.class);
-                startActivity(toDetail);
-                getActivity().finish();
+            public void onClick(View v) {
+                getRecentLaporan();
             }
         });
 
-        return view;
+        getRecentLaporan();
+    }
+
+    private void getRecentLaporan() {
+        errorLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
+
+        StringRequest getRecentLaporan = new StringRequest(Request.Method.GET, ApiHelper.ALL_LAPORAN, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+
+                    // jika status false
+                    if (jsonObject.getString("status").equals("false")) {
+                        Toast.makeText(getContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    laporanList = new ArrayList<>();
+
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject objectLaporan = data.getJSONObject(i);
+
+                        laporanList.add(new LaporanItem(
+                                objectLaporan.getInt("id_laporan"),
+                                objectLaporan.getInt("id_user"),
+                                objectLaporan.getString("judul"),
+                                objectLaporan.getString("deskripsi"),
+                                objectLaporan.getString("tanggal"),
+                                objectLaporan.getString("alamat"),
+                                objectLaporan.getDouble("lat"),
+                                objectLaporan.getDouble("lng")
+                        ));
+                    }
+
+                    laporanLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+                    laporanAdapter = new LaporanAdapter(laporanList);
+
+                    laporanRecyclerView.setLayoutManager(laporanLayoutManager);
+                    laporanRecyclerView.setAdapter(laporanAdapter);
+
+                    // handle onclick card
+                    laporanAdapter.setOnItemCliclListener(new LaporanAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position) {
+//                            Toast.makeText(getActivity().getApplicationContext(), "ID: " + laporanList.get(position).getIdLaporan(), Toast.LENGTH_SHORT).show();
+                            Intent toDetail = new Intent(getActivity().getApplicationContext(), DetailLaporanActivity.class);
+                            toDetail.putExtra("ID_LAPORAN", String.valueOf(laporanList.get(position).getIdLaporan()));
+                            startActivity(toDetail);
+                            getActivity().finish();
+                        }
+                    });
+
+                    loadingLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.GONE);
+                    laporanRecyclerView.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    loadingLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = "Terjadi error. Coba beberapa saat lagi.";
+
+                if (error instanceof NetworkError) {
+                    message = "Tidak dapat terhubung ke internet. Harap periksa koneksi anda.";
+                } else if (error instanceof AuthFailureError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof ClientError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof NoConnectionError) {
+                    message = "Tidak ada koneksi internet. Harap periksa koneksi anda.";
+                } else if (error instanceof TimeoutError) {
+                    message = "Connection Time Out. Harap periksa koneksi anda.";
+                }
+
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+                loadingLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        requestQueue.add(getRecentLaporan);
     }
 }

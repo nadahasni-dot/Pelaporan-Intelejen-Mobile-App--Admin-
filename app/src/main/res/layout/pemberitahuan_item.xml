@@ -8,9 +8,9 @@
         android:id="@+id/card_pemberitahuan"
         android:layout_width="match_parent"
         android:layout_height="105dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
@@ -25,11 +25,11 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:contentDescription="check detail"
                 android:id="@+id/imageView2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_marginEnd="8dp"
+                android:contentDescription="check detail"
                 android:src="@drawable/ic_baseline_chevron_right_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -38,12 +38,12 @@
             <TextView
                 android:id="@+id/pemberitahuan_title"
                 android:layout_width="0dp"
-                android:maxLines="1"
-                android:ellipsize="end"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="Judul Pemberitahuan"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/colorDark"
@@ -58,8 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:maxLines="2"
                 android:ellipsize="end"
+                android:maxLines="2"
                 android:text="Lorem ipsum dplor sit amet. convectus dolor sit lorem en dolor amet conv."
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorDark"
@@ -84,6 +84,64 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pemberitahuan_description" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statusBelumTerbaca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/pemberitahuan_date"
+                app:layout_constraintStart_toEndOf="@+id/pemberitahuan_date"
+                app:layout_constraintTop_toTopOf="@+id/pemberitahuan_date">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorDanger">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:text="Belum dibaca"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statusTerbaca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/pemberitahuan_date"
+                app:layout_constraintStart_toEndOf="@+id/pemberitahuan_date"
+                app:layout_constraintTop_toTopOf="@+id/pemberitahuan_date">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorSuccess">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:text="Sudah dibaca"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

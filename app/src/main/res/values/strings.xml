@@ -1,9 +1,5 @@
 <resources>
     <string name="app_name">Pelaporan Bakesbangpol Malang</string>
-    <string name="mainPelaporan">PELAPORAN</string>
-    <string name="mainMalang">MALANG</string>
-    <string name="mainBakesbangpol">BAKESBANGPOL</string>
-    <string name="mainForAdmin">for admin</string>
     <string name="loginLogin">Login</string>
     <string name="loginHi">Hi,</string>
     <string name="loginWelcome">Welcome</string>
@@ -24,7 +20,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">close navigation drawer</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="nav_profile">Profil</string>
     <string name="profile_username">Username</string>
     <string name="profileImageDescription">UserProfileImage</string>
@@ -37,8 +32,4 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas orci felis, elementum id lobortis nec, commodo pellentesque nunc. Nam ac cursus enim. Duis et diam cursus dolor ultricies pretium. Vivamus non quam varius, tristique ligula nec, aliquam mi. Donec convallis, mi ut vulputate porta, risus lectus mollis lorem, ut commodo massa lorem vehicula lacus. Nulla facilisi. Fusce sodales neque vel auctor lacinia. Nulla rutrum suscipit sapien quis molestie. Duis sed bibendum enim, id varius libero. Cras nulla libero, maximus rutrum eros id, hendrerit maximus leo. Aliquam a faucibus urna. Curabitur rhoncus suscipit finibus. Etiam sit amet feugiat nisl, id varius ipsum.</string>
     <string name="nav_pemberitahuan">Pemberitahuan</string>
     <string name="title_activity_maps_test">Map</string>
-    <string name="CAPTCHA_SITE_KEY">6Le1VNoZAAAAAFrcyMnPkLowN1yiuFBNqSoG-myi</string>
-    <string name="CAPTCHA_SITE_KEY_DUA">6LedVtoZAAAAAMJuaoCd5mCsgLshyKb4B93xMm4x</string>
-    <string name="CAPTCHA_SECRET_KEY">6Le1VNoZAAAAAOeFHMHeqLOjgJoi0Xj7KoCzFvly</string>
-    <string name="CAPTCHA_SECRET_KEY_DUA">6LedVtoZAAAAAGmsVonG-OQFkyEARdeAqnI8-OXe</string>
 </resources>

@@ -10,14 +10,34 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.ClientError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.pelaporanbakesbangpolmalang.AddUserActivity;
+import com.example.pelaporanbakesbangpolmalang.DetailLaporanActivity;
 import com.example.pelaporanbakesbangpolmalang.DetailUserActivity;
 import com.example.pelaporanbakesbangpolmalang.R;
+import com.example.pelaporanbakesbangpolmalang.adapter.LaporanAdapter;
 import com.example.pelaporanbakesbangpolmalang.adapter.PenggunaAdapter;
+import com.example.pelaporanbakesbangpolmalang.helper.ApiHelper;
+import com.example.pelaporanbakesbangpolmalang.helper.VolleyHelper;
+import com.example.pelaporanbakesbangpolmalang.model.LaporanItem;
 import com.example.pelaporanbakesbangpolmalang.model.PenggunaItem;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -40,10 +60,14 @@ public class UsersFragment extends Fragment {
     // array list item pengguna
     private ArrayList<PenggunaItem> penggunaList;
 
+    private RequestQueue requestQueue;
+
     // Widget
     private RecyclerView penggunaRecyclerView;
     private PenggunaAdapter penggunaAdapter;
     private RecyclerView.LayoutManager penggunaLayoutManager;
+    private LinearLayout errorLayout, loadingLayout;
+    private MaterialButton cobaButton;
 
     private FloatingActionButton penggunaFABAddpengguna;
 
@@ -83,11 +107,33 @@ public class UsersFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
 
+        init(view);
+
+        return view;
+    }
+
+    private void init(View view) {
+        requestQueue = VolleyHelper.getInstance(getContext()).getRequestQueue();
+
+        penggunaRecyclerView = view.findViewById(R.id.recyclerViewPenggunaAdmin);
+        penggunaRecyclerView.setHasFixedSize(true);
         penggunaFABAddpengguna = view.findViewById(R.id.penggunaFABAddUser);
+
+        loadingLayout = view.findViewById(R.id.loading_pengguna_layout);
+        errorLayout = view.findViewById(R.id.error_pengguna_layout);
+        cobaButton = view.findViewById(R.id.button_coba_pengguna);
+
+        cobaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAllUser();
+            }
+        });
+
         penggunaFABAddpengguna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "tombol di klik", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "tombol di klik", Toast.LENGTH_SHORT).show();
 
                 Intent toAddUser = new Intent(getActivity().getApplicationContext(), AddUserActivity.class);
                 startActivity(toAddUser);
@@ -95,33 +141,94 @@ public class UsersFragment extends Fragment {
             }
         });
 
-        //  setup recycler view
-        penggunaList = new ArrayList<>();
-        penggunaList.add(new PenggunaItem(1, "User 1", "email1@email.com", "http://google.com"));
-        penggunaList.add(new PenggunaItem(2, "User 2", "email2@email.com", "http://google.com"));
-        penggunaList.add(new PenggunaItem(3, "User 3", "email3@email.com", "http://google.com"));
-        penggunaList.add(new PenggunaItem(4, "User 4", "email4@email.com", "http://google.com"));
-        penggunaList.add(new PenggunaItem(5, "User 5", "email5 @email.com", "http://google.com"));
+        getAllUser();
+    }
 
-        penggunaRecyclerView = view.findViewById(R.id.recyclerViewPenggunaAdmin);
-        penggunaRecyclerView.setHasFixedSize(true);
-        penggunaLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        penggunaAdapter = new PenggunaAdapter(penggunaList);
+    private void getAllUser() {
+        errorLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
 
-        penggunaRecyclerView.setLayoutManager(penggunaLayoutManager);
-        penggunaRecyclerView.setAdapter(penggunaAdapter);
-
-        // handle onclick card
-        penggunaAdapter.setOnItemCliclListener(new PenggunaAdapter.OnItemClickListener() {
+        StringRequest getAllUser = new StringRequest(Request.Method.GET, ApiHelper.ALL_USER, new Response.Listener<String>() {
             @Override
-            public void onItemClick(int position) {
-                Toast.makeText(getActivity().getApplicationContext(), "ID: " + penggunaList.get(position).getUsername(), Toast.LENGTH_SHORT).show();
-                Intent toDetail = new Intent(getActivity().getApplicationContext(), DetailUserActivity.class);
-                startActivity(toDetail);
-                getActivity().finish();
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+
+                    // jika status false
+                    if (jsonObject.getString("status").equals("false")) {
+                        Toast.makeText(getContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    JSONArray data = jsonObject.getJSONArray("data");
+                    penggunaList = new ArrayList<>();
+
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject objectPengguna = data.getJSONObject(i);
+
+                        penggunaList.add(new PenggunaItem(
+                                objectPengguna.getInt("id_user"),
+                                objectPengguna.getString("username"),
+                                objectPengguna.getString("email"),
+                                ApiHelper.ASSETS_URL + objectPengguna.getString("foto")
+                        ));
+                    }
+
+                    penggunaLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+                    penggunaAdapter = new PenggunaAdapter(penggunaList);
+
+                    penggunaRecyclerView.setLayoutManager(penggunaLayoutManager);
+                    penggunaRecyclerView.setAdapter(penggunaAdapter);
+
+                    // handle onclick card
+                    penggunaAdapter.setOnItemCliclListener(new PenggunaAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position) {
+//                            Toast.makeText(getActivity().getApplicationContext(), "ID: " + penggunaList.get(position).getUsername(), Toast.LENGTH_SHORT).show();
+                            Intent toDetail = new Intent(getActivity().getApplicationContext(), DetailUserActivity.class);
+                            toDetail.putExtra("ID_USER", String.valueOf(penggunaList.get(position).getIdUser()));
+                            startActivity(toDetail);
+                            getActivity().finish();
+                        }
+                    });
+
+                    loadingLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.GONE);
+                    penggunaRecyclerView.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    loadingLayout.setVisibility(View.GONE);
+                    errorLayout.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String message = "Terjadi error. Coba beberapa saat lagi.";
+
+                if (error instanceof NetworkError) {
+                    message = "Tidak dapat terhubung ke internet. Harap periksa koneksi anda.";
+                } else if (error instanceof AuthFailureError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof ClientError) {
+                    message = "Gagal login. Harap periksa email dan password anda.";
+                } else if (error instanceof NoConnectionError) {
+                    message = "Tidak ada koneksi internet. Harap periksa koneksi anda.";
+                } else if (error instanceof TimeoutError) {
+                    message = "Connection Time Out. Harap periksa koneksi anda.";
+                }
+
+//                Fragment errorFragment = new ErrorFragment();
+//                getSupportFragmentManager().beginTransaction().replace(R.id.container_user, errorFragment).commit();
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+                loadingLayout.setVisibility(View.GONE);
+                errorLayout.setVisibility(View.VISIBLE);
+
+//                Snackbar.make(getActivity().getSupportFragmentManager().getFragment(null, ni), message, Snackbar.LENGTH_LONG).show();
             }
         });
 
-        return view;
+        requestQueue.add(getAllUser);
     }
 }

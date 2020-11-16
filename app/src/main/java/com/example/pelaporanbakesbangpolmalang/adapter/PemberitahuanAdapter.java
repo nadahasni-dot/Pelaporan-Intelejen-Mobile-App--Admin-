@@ -9,25 +9,22 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pelaporanbakesbangpolmalang.model.PemberitahuanItem;
 import com.example.pelaporanbakesbangpolmalang.R;
+import com.example.pelaporanbakesbangpolmalang.model.PemberitahuanItem;
 
 import java.util.ArrayList;
 
 public class PemberitahuanAdapter extends RecyclerView.Adapter<PemberitahuanAdapter.PemberitahuanViewHolder> {
     private ArrayList<PemberitahuanItem> mPemberitahuanList;
     private OnItemClickListener mListener;
+    private int status;
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
+    public PemberitahuanAdapter(ArrayList<PemberitahuanItem> laporaList) {
+        mPemberitahuanList = laporaList;
     }
 
     public void setOnItemCliclListener(OnItemClickListener listener) {
         mListener = listener;
-    }
-
-    public PemberitahuanAdapter(ArrayList<PemberitahuanItem> laporaList) {
-        mPemberitahuanList = laporaList;
     }
 
     @NonNull
@@ -42,9 +39,15 @@ public class PemberitahuanAdapter extends RecyclerView.Adapter<PemberitahuanAdap
     public void onBindViewHolder(@NonNull PemberitahuanViewHolder holder, int position) {
         PemberitahuanItem currentItem = mPemberitahuanList.get(position);
 
+        status = currentItem.getDibaca();
         holder.textJudul.setText(currentItem.getJudul());
         holder.textDescription.setText(currentItem.getDescription());
         holder.textDate.setText(currentItem.getTanggal());
+        if (status == 1) {
+            holder.statusTerbaca.setVisibility(View.VISIBLE);
+        } else {
+            holder.statusBelumTerbaca.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -52,11 +55,15 @@ public class PemberitahuanAdapter extends RecyclerView.Adapter<PemberitahuanAdap
         return mPemberitahuanList.size();
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
     public static class PemberitahuanViewHolder extends RecyclerView.ViewHolder {
         public TextView textJudul;
         public TextView textDescription;
         public TextView textDate;
-        public CardView cardPemberitahuan;
+        public CardView cardPemberitahuan, statusTerbaca, statusBelumTerbaca;
 
         public PemberitahuanViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
@@ -65,6 +72,8 @@ public class PemberitahuanAdapter extends RecyclerView.Adapter<PemberitahuanAdap
             textDescription = itemView.findViewById(R.id.pemberitahuan_description);
             textDate = itemView.findViewById(R.id.pemberitahuan_date);
             cardPemberitahuan = itemView.findViewById(R.id.card_pemberitahuan);
+            statusTerbaca = itemView.findViewById(R.id.statusTerbaca);
+            statusBelumTerbaca = itemView.findViewById(R.id.statusBelumTerbaca);
 
             cardPemberitahuan.setOnClickListener(new View.OnClickListener() {
                 @Override

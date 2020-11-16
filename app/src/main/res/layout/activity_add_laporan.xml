@@ -21,8 +21,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:fillViewport="true"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@+id/addLaporanToolbar">
@@ -33,35 +33,47 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addLaporanLokasiInput"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:hint="Alamat"
                 app:boxStrokeColor="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/searchButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <EditText
+                    android:id="@+id/autoCompleteSearchInput"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="text" />
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:inputType="textPostalAddress"
+                    android:layout_marginRight="8dp"
+                    android:hint="Masukkan alamat"
+                    android:imeOptions="actionSearch" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/searchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="SEARCH"
+                app:layout_constraintBottom_toBottomOf="@+id/addLaporanLokasiInput"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/addLaporanLokasiInput" />
+
+            <fragment
                 android:id="@+id/addLaporanMapView"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/colorLightGrey"
-                android:gravity="center"
-                android:text="MapView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addLaporanLokasiInput" />
@@ -83,7 +95,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:maxLines="1"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,28 +122,30 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageView
-                android:id="@+id/addPenggunaImage"
+                android:id="@+id/addLaporanImage"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/colorLightGrey"
+                android:scaleType="centerCrop"
+                android:src="@color/colorLightGrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/addLaporanDeskripsiInput" />
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/addLaporanPilihFotoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pilih Foto"
-                app:icon="@drawable/ic_baseline_image_24"
+                android:text="Ambil Foto"
+                app:icon="@drawable/ic_baseline_camera_alt_24"
                 app:iconGravity="textStart"
-                app:layout_constraintBottom_toBottomOf="@+id/addPenggunaImage"
+                app:layout_constraintBottom_toBottomOf="@+id/addLaporanImage"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/addPenggunaImage"
-                app:layout_constraintTop_toTopOf="@+id/addPenggunaImage" />
+                app:layout_constraintStart_toStartOf="@+id/addLaporanImage"
+                app:layout_constraintTop_toTopOf="@+id/addLaporanImage" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/addLaporanSimpan"
@@ -144,7 +159,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addPenggunaImage" />
+                app:layout_constraintTop_toBottomOf="@+id/addLaporanImage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

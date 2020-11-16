@@ -6,13 +6,23 @@ public class PemberitahuanItem {
     private String judul;
     private String description;
     private String tanggal;
+    private int dibaca;
 
-    public PemberitahuanItem(int idPemberitahuan, int idUser, String judul, String description, String tanggal) {
+    public PemberitahuanItem(int idPemberitahuan, int idUser, String judul, String description, String tanggal, int dibaca) {
         this.idPemberitahuan = idPemberitahuan;
         this.idUser = idUser;
         this.judul = judul;
         this.description = description;
         this.tanggal = tanggal;
+        this.dibaca = dibaca;
+    }
+
+    public int getDibaca() {
+        return dibaca;
+    }
+
+    public void setDibaca(int dibaca) {
+        this.dibaca = dibaca;
     }
 
     public int getIdPemberitahuan() {

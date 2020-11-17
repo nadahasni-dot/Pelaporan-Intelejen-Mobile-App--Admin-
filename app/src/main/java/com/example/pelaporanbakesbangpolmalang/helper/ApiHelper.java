@@ -25,6 +25,7 @@ public class ApiHelper {
     public static final String AUTH_DELETE = BASE_URL + "auth/delete/";
     public static final String AUTH_UPDATE_USER = BASE_URL + "auth/update/user";
     public static final String AUTH_UPDATE_PASSWORD = BASE_URL + "auth/update/password";
+    public static final String FORGOT_PASSWORD = BASE_URL + "auth/forgotpassword";
 
     // PEMBERITAHUAN
     public static final String ALL_PEMBERITAHUAN = BASE_URL + "pemberitahuan/all";

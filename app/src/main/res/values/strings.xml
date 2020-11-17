@@ -8,7 +8,7 @@
     <string name="loginPassword">Password</string>
     <string name="loginLupaPassword">Lupa password?</string>
     <string name="loginLoginButtonText">LOGIN</string>
-    <string name="forgotSendRequest">Reset Password</string>
+    <string name="forgotSendRequest">Request New Password</string>
     <string name="forgotForgot">Forgot</string>
     <string name="forgotInstructionsDetail">Masukkan email anda, dan kami akan mengirim link untuk mereset password anda</string>
     <string name="forgotPasswordText">Password</string>

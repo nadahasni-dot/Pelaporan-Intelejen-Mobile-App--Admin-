@@ -32,4 +32,40 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas orci felis, elementum id lobortis nec, commodo pellentesque nunc. Nam ac cursus enim. Duis et diam cursus dolor ultricies pretium. Vivamus non quam varius, tristique ligula nec, aliquam mi. Donec convallis, mi ut vulputate porta, risus lectus mollis lorem, ut commodo massa lorem vehicula lacus. Nulla facilisi. Fusce sodales neque vel auctor lacinia. Nulla rutrum suscipit sapien quis molestie. Duis sed bibendum enim, id varius libero. Cras nulla libero, maximus rutrum eros id, hendrerit maximus leo. Aliquam a faucibus urna. Curabitur rhoncus suscipit finibus. Etiam sit amet feugiat nisl, id varius ipsum.</string>
     <string name="nav_pemberitahuan">Pemberitahuan</string>
     <string name="title_activity_maps_test">Map</string>
+    <string-array name="wilayah_array">
+        <item>Semua Wilayah</item>
+        <item>Ampelgading</item>
+        <item>Bantur</item>
+        <item>Bululawang</item>
+        <item>Dampit</item>
+        <item>Dau</item>
+        <item>Donomulyo</item>
+        <item>Gedangan</item>
+        <item>Gondanglegi</item>
+        <item>Jabung</item>
+        <item>Kalipare</item>
+        <item>Karangploso</item>
+        <item>Kasembon</item>
+        <item>Kepanjen</item>
+        <item>Kromengan</item>
+        <item>Lawang</item>
+        <item>Ngajum</item>
+        <item>Ngantang</item>
+        <item>Pagak</item>
+        <item>Pagelaran</item>
+        <item>Pakis</item>
+        <item>Pakisaji</item>
+        <item>Poncokusumo</item>
+        <item>Pujon</item>
+        <item>Singosari</item>
+        <item>Sumbermanjing</item>
+        <item>Sumberpucung</item>
+        <item>Tajinan</item>
+        <item>Tirtoyudo</item>
+        <item>Tumpang</item>
+        <item>Turen</item>
+        <item>Wagir</item>
+        <item>Wajak</item>
+        <item>Wonosari</item>
+    </string-array>
 </resources>

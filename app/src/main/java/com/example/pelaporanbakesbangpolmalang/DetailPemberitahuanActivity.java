@@ -74,7 +74,7 @@ public class DetailPemberitahuanActivity extends AppCompatActivity {
 
         judulPemberitahuanText = findViewById(R.id.detailPemberitahuanJudulText);
         pelaporPemberitahuanText = findViewById(R.id.detailPemberitahuanPelapor);
-        tanggalPemberitahuanText = findViewById(R.id.detailPemberitahuanTanggal);
+//        tanggalPemberitahuanText = findViewById(R.id.detailPemberitahuanTanggal);
         deskripsiPemberitahuanText = findViewById(R.id.detailPemberitahuanDeskripsi);
 
         cobaButton = findViewById(R.id.button_coba_detail_pemberitahuan);
@@ -113,13 +113,12 @@ public class DetailPemberitahuanActivity extends AppCompatActivity {
                     JSONObject data = responseObject.getJSONObject("data");
 
                     judul = data.getString("judul");
-                    pelapor = "Dilaporkan oleh " + data.getString("username");
-                    tanggal = "pada " + unixToDateString(data.getString("dibuat_pada"));
+                    pelapor = "Dilaporkan oleh " + data.getString("username") + " pada " + unixToDateString(data.getString("dibuat_pada"));
                     deskripsi = data.getString("deskripsi");
 
                     judulPemberitahuanText.setText(judul);
                     pelaporPemberitahuanText.setText(pelapor);
-                    tanggalPemberitahuanText.setText(tanggal);
+//                    tanggalPemberitahuanText.setText(tanggal);
                     deskripsiPemberitahuanText.setText(deskripsi);
 
                     loadingLayout.setVisibility(View.GONE);

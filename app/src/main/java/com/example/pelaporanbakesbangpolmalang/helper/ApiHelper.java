@@ -1,11 +1,11 @@
 package com.example.pelaporanbakesbangpolmalang.helper;
 
 public class ApiHelper {
-//        public static final String BASE_URL = "http://192.168.43.68/ci-rest-api-bakesbangpol/api/";
-//        public static final String BASE_URL = "http://172.20.10.2/ci-rest-api-bakesbangpol/api/";
-    public static final String BASE_URL = "http://192.168.100.128/ci-rest-api-bakesbangpol/api/";
-//    public static final String BASE_URL = "https://laporbakesbangpol.000webhostapp.com/api/";
-    public static final String ASSETS_URL = "http://192.168.100.128/ci-rest-api-bakesbangpol/assets/img/";
+    //        public static final String BASE_URL = "http://192.168.43.68/ci-rest-api-bakesbangpol/api/";
+    public static final String BASE_URL = "http://laporkesbangpol.malangkab.go.id/api/";
+    //    public static final String BASE_URL = "http://192.168.100.128/ci-rest-api-bakesbangpol/api/";
+    //    public static final String BASE_URL = "https://laporbakesbangpol.000webhostapp.com/api/";
+    public static final String ASSETS_URL = "http://laporkesbangpol.malangkab.go.id/assets/img/";
 
     // LAPORAN
     public static final String ALL_LAPORAN = BASE_URL + "laporan/all";
@@ -13,6 +13,7 @@ public class ApiHelper {
     public static final String LAPORAN_BY_ID_USER = BASE_URL + "laporan/id_user/";
     public static final String LAPORAN_BY_ID_LAPORAN = BASE_URL + "laporan/id_laporan/";
     public static final String ADD_LAPORAN = BASE_URL + "laporan/tambah";
+    public static final String HOME_LAPORAN = BASE_URL + "laporan/home/";
 
     // USER
     public static final String LOGIN = BASE_URL + "auth";

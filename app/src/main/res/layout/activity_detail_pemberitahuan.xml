@@ -69,11 +69,11 @@
 
     <ScrollView
         android:id="@+id/contentDetailPemberitahuan"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
         android:scrollbars="none"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,25 +116,30 @@
 
                     <TextView
                         android:id="@+id/detailPemberitahuanPelapor"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
                         android:text="Dilaporkan oleh User 1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/detailPemberitahuanJudulText" />
 
-                    <TextView
-                        android:id="@+id/detailPemberitahuanTanggal"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="pada 01, Januari 2020"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/detailPemberitahuanPelapor"
-                        app:layout_constraintTop_toBottomOf="@+id/detailPemberitahuanJudulText" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/detailPemberitahuanTanggal"-->
+                    <!--                        android:layout_width="0dp"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginStart="8dp"-->
+                    <!--                        android:layout_marginEnd="16dp"-->
+                    <!--                        android:layout_marginBottom="8dp"-->
+                    <!--                        android:text="pada 01, Januari 2020"-->
+                    <!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+                    <!--                        app:layout_constraintEnd_toEndOf="parent"-->
+                    <!--                        app:layout_constraintStart_toEndOf="@+id/detailPemberitahuanPelapor"-->
+                    <!--                        app:layout_constraintTop_toBottomOf="@+id/detailPemberitahuanJudulText" />-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,7 +178,8 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="16dp"
                         android:text="@string/lorem_ipsum"
-                        android:textAlignment="viewStart" />
+                        android:textAlignment="viewStart"
+                        android:textIsSelectable="true" />
 
                 </LinearLayout>
 

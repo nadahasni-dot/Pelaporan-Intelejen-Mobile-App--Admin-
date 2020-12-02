@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,7 @@ import com.example.pelaporanbakesbangpolmalang.HomeActivity;
 import com.example.pelaporanbakesbangpolmalang.R;
 import com.example.pelaporanbakesbangpolmalang.adapter.LaporanAdapter;
 import com.example.pelaporanbakesbangpolmalang.helper.ApiHelper;
+import com.example.pelaporanbakesbangpolmalang.helper.SessionHelper;
 import com.example.pelaporanbakesbangpolmalang.helper.VolleyHelper;
 import com.example.pelaporanbakesbangpolmalang.model.LaporanItem;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -72,22 +76,30 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION_PERMISSION = 99;
     // current location
     FusedLocationProviderClient fusedLocationProviderClient;
-    // TODO: Rename and change types of parameters
+
+    private RequestQueue requestQueue;
+    private SessionHelper sessionHelper;
+
     private ArrayList<LaporanItem> laporanList;
+    private ArrayAdapter<CharSequence> spinnerAdapter;
     // Widget
     private RecyclerView laporanRecyclerView;
     private LaporanAdapter laporanAdapter;
     private RecyclerView.LayoutManager laporanLayoutManager;
-    private TextView lihatSemua;
-    private RequestQueue requestQueue;
-    private ProgressBar progressBar;
-    private LinearLayout errorLayout;
+
+    private TextView lihatSemua, countLaporan, countLaporanUser, countPelapor, countPemberitahuan;
+    private Spinner spinnerWilayah;
     private MaterialButton cobaButton;
+
+    private LinearLayout progressBar;
+    private LinearLayout errorLayout;
+    private ScrollView contentLayout;
 
     // variable
     private LatLng lastKnownLocation;
     private float zoom = 10;
     private GoogleMap mMap;
+    private String url = ApiHelper.HOME_LAPORAN;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -131,6 +143,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void init(View view) {
+        sessionHelper = new SessionHelper(getContext());
+        url = "all/" + sessionHelper.getIdUser();
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
         requestQueue = VolleyHelper.getInstance(getContext()).getRequestQueue();
@@ -141,7 +156,37 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        spinnerWilayah = view.findViewById(R.id.spinner_wilayah);
+        spinnerWilayah.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (parent.getItemAtPosition(position).toString().equals("Semua Wilayah")) {
+                    url = ApiHelper.HOME_LAPORAN + "all/" + sessionHelper.getIdUser();
+                } else {
+                    url = ApiHelper.HOME_LAPORAN + "wilayah/" + sessionHelper.getIdUser() + "/" + parent.getItemAtPosition(position).toString();
+                }
+//                Toast.makeText(getContext(), url, Toast.LENGTH_LONG).show();
+                getHomeLaporan(url);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Toast.makeText(getContext(), "nothing selected", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        spinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.wilayah_array, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerWilayah.setAdapter(spinnerAdapter);
+
+        countLaporan = view.findViewById(R.id.text_count_laporan);
+        countLaporanUser = view.findViewById(R.id.text_count_laporan_user);
+        countPelapor = view.findViewById(R.id.text_count_pelapor);
+        countPemberitahuan = view.findViewById(R.id.text_count_pemberitahuan);
+
         progressBar = view.findViewById(R.id.progress_bar_home);
+        contentLayout = view.findViewById(R.id.contentLayoutHomeFragment);
         cobaButton = view.findViewById(R.id.button_coba_home);
         lihatSemua = view.findViewById(R.id.home_lihat_semua);
         errorLayout = view.findViewById(R.id.home_error_request);
@@ -157,7 +202,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         cobaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getRecentLaporan("3");
+                getHomeLaporan(url);
             }
         });
 
@@ -166,11 +211,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 //        laporanList.add(new LaporanItem(2, 2, "Laporan 2", "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ips", "2 Januari 2020"));
     }
 
-    private void getRecentLaporan(String limit) {
+    private void getHomeLaporan(String url) {
         progressBar.setVisibility(View.VISIBLE);
+        contentLayout.setVisibility(View.GONE);
+        errorLayout.setVisibility(View.GONE);
         mMap.clear();
 
-        StringRequest getRecentLaporan = new StringRequest(Request.Method.GET, ApiHelper.ALL_LAPORAN_LIMIT + limit, new Response.Listener<String>() {
+        StringRequest getRecentLaporan = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -182,12 +229,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         return;
                     }
 
-                    JSONArray data = jsonObject.getJSONArray("data");
+                    countLaporan.setText(jsonObject.getString("count_laporan"));
+                    countLaporanUser.setText(jsonObject.getString("count_laporan_user"));
+                    countPelapor.setText(jsonObject.getString("count_pelapor"));
+                    countPemberitahuan.setText(jsonObject.getString("count_pemberitahuan"));
+
+                    JSONArray laporan = jsonObject.getJSONArray("laporan");
                     laporanList = new ArrayList<>();
                     LatLng locationMarker;
 
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject objectLaporan = data.getJSONObject(i);
+                    for (int i = 0; i < laporan.length(); i++) {
+                        JSONObject objectLaporan = laporan.getJSONObject(i);
 
                         laporanList.add(new LaporanItem(
                                 objectLaporan.getInt("id_laporan"),
@@ -195,7 +247,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                 objectLaporan.getString("judul"),
                                 objectLaporan.getString("deskripsi"),
                                 objectLaporan.getString("tanggal"),
-                                objectLaporan.getString("alamat"),
+                                objectLaporan.getString("alamat_laporan"),
                                 objectLaporan.getDouble("lat"),
                                 objectLaporan.getDouble("lng")
                         ));
@@ -204,7 +256,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                         mMap.addMarker(new MarkerOptions().position(locationMarker)
                                 .title(objectLaporan.getString("judul"))
-                                .snippet(objectLaporan.getString("alamat"))
+                                .snippet(objectLaporan.getString("alamat_laporan"))
                         );
                     }
 
@@ -218,7 +270,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     laporanAdapter.setOnItemCliclListener(new LaporanAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(int position) {
-//                            Toast.makeText(getActivity().getApplicationContext(), "ID: " + laporanList.get(position).getIdLaporan(), Toast.LENGTH_SHORT).show();
                             Intent toDetail = new Intent(getActivity().getApplicationContext(), DetailLaporanActivity.class);
                             toDetail.putExtra("INTENT_FROM", "HOME");
                             toDetail.putExtra("ID_LAPORAN", String.valueOf(laporanList.get(position).getIdLaporan()));
@@ -229,10 +280,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                     progressBar.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.GONE);
-                    laporanRecyclerView.setVisibility(View.VISIBLE);
+                    contentLayout.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
                     progressBar.setVisibility(View.GONE);
                     errorLayout.setVisibility(View.VISIBLE);
+                    contentLayout.setVisibility(View.GONE);
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -259,6 +311,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                 progressBar.setVisibility(View.GONE);
                 errorLayout.setVisibility(View.VISIBLE);
+                contentLayout.setVisibility(View.GONE);
 
 //                Snackbar.make(getActivity().getSupportFragmentManager().getFragment(null, ni), message, Snackbar.LENGTH_LONG).show();
             }
@@ -338,7 +391,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 //        mMap.addMarker(new MarkerOptions().title("Pelanggaran Protokol Covid").position(alun).snippet("Laporan dari pusat kota (Alun - alun Jember)"));
 
         getLastKnownLocation();
-        getRecentLaporan("5");
 
 //        setMapLongClick(mMap);
 //        setPoiClick(mMap);
@@ -352,6 +404,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 if (grantResults.length > 0
                         && grantResults[0]
                         == PackageManager.PERMISSION_GRANTED) {
+                    getLastKnownLocation();
                     enableMyLocation();
                     break;
                 }

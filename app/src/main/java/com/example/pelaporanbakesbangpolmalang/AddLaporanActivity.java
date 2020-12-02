@@ -1,15 +1,19 @@
 package com.example.pelaporanbakesbangpolmalang;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
@@ -52,6 +56,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +68,11 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
     private static final String LONGITUDE = "LONGITUDE";
     // GMAP
     private static final int REQUEST_LOCATION_PERMISSION = 99;
+    // Request code
+    private static final int REQUEST_CAMERA = 100;
+    private static final int REQUEST_GALLERY = 200;
+    // item dialog
+    final CharSequence[] dialogItems = {"Camera", "Gallery", "Cancel"};
 
     Toolbar addLaporanToolbar;
     TextInputLayout searchInput;
@@ -85,7 +96,9 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
     private GoogleMap mMap;
     private Bitmap laporanBitmap;
     private ImageView laporanImage;
+
     private int CAMERA_REQUEST = 1888;
+    private int GALLERY_REQUEST = 1999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +138,6 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
                         && !inputDeskripsi.getEditText().getText().toString().isEmpty()) {
                     if (validateInput()) {
                         uploadLaporan();
-                        Toast.makeText(AddLaporanActivity.this, "Data lengkap", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(AddLaporanActivity.this, "Harap melengkapi semua data laporan", Toast.LENGTH_SHORT).show();
@@ -136,15 +148,7 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(AddLaporanActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(AddLaporanActivity.this,
-                            new String[]{
-                                    Manifest.permission.CAMERA
-                            }, 100);
-                } else {
-                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                }
+                selectImage();
             }
         });
 
@@ -179,6 +183,43 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+    private void selectImage() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(AddLaporanActivity.this);
+        dialog.setTitle("Add Image");
+        dialog.setItems(dialogItems, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // select by camera
+                if (dialogItems[which].equals("Camera")) {
+                    if (ContextCompat.checkSelfPermission(AddLaporanActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(AddLaporanActivity.this,
+                                new String[]{
+                                        Manifest.permission.CAMERA
+                                }, REQUEST_CAMERA);
+                    } else {
+                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                    }
+                }
+
+                //select by gallery
+                if (dialogItems[which].equals("Gallery")) {
+                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    galleryIntent.setType("image/*");
+                    startActivityForResult(galleryIntent, GALLERY_REQUEST);
+                }
+
+                if (dialogItems[which].equals("Cancel")) {
+                    dialog.dismiss();
+                } else {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
     private void uploadLaporan() {
         progressDialog.setMessage("Sedang memproses...");
         progressDialog.setCancelable(false);
@@ -194,6 +235,10 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
 
                     Toast.makeText(AddLaporanActivity.this, objectResponse.getString("message"), Toast.LENGTH_SHORT).show();
 
+                    Intent toHomeUser = new Intent(AddLaporanActivity.this, HomeActivity.class);
+                    toHomeUser.putExtra("GOTO_FRAGMENT", "LAPORAN");
+                    startActivity(toHomeUser);
+                    finish();
                 } catch (Exception e) {
                     Toast.makeText(AddLaporanActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -257,7 +302,7 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100) {
+        if (requestCode == REQUEST_CAMERA) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -281,10 +326,24 @@ public class AddLaporanActivity extends AppCompatActivity implements OnMapReadyC
             laporanBitmap = ImageResizer.reduceBitmapSize(photo, 2250000);
 
             laporanImage.setImageBitmap(laporanBitmap);
-            Toast.makeText(this, "Berhasil", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Berhasil mengambil gambar", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK && data != null) {
+            Uri path = data.getData();
+
+            tambahBtn.setEnabled(true);
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(path);
+                Bitmap photo = BitmapFactory.decodeStream(inputStream);
+                laporanBitmap = ImageResizer.reduceBitmapSize(photo, 2250000);
+
+                laporanImage.setImageBitmap(laporanBitmap);
+                Toast.makeText(this, "Berhasil mengambil gambar", Toast.LENGTH_SHORT).show();
+            } catch (FileNotFoundException e) {
+                Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+            }
         } else {
             tambahBtn.setEnabled(false);
-            Toast.makeText(this, "gagal", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Harap Pilih Gambar", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -78,7 +78,7 @@ public class DetailLaporanActivity extends AppCompatActivity {
 
         judulText = findViewById(R.id.detailLaporanJudulText);
         pelaporText = findViewById(R.id.detailLaporanPelapor);
-        tanggalText = findViewById(R.id.detailLaporanTanggal);
+//        tanggalText = findViewById(R.id.detailLaporanTanggal);
         alamatText = findViewById(R.id.detailLaporanAlamat);
         deskripsiText = findViewById(R.id.detailLaporanDeskripsi);
         laporanImage = findViewById(R.id.detailLaporanImage);
@@ -128,8 +128,9 @@ public class DetailLaporanActivity extends AppCompatActivity {
                     JSONObject data = responseObject.getJSONObject("data");
 
                     judulLaooran = data.getString("judul");
-                    pelapor = "Dilaporkan oleh " + data.getString("username");
-                    tanggalLaporan = "pada " + unixToDateString(data.getString("dibuat_pada"));
+                    pelapor = "Dilaporkan oleh " + data.getString("username") + " pada " + unixToDateString(data.getString("dibuat_pada"));
+                    ;
+//                    tanggalLaporan = "pada " + unixToDateString(data.getString("dibuat_pada"));
                     alamatLaporan = data.getString("alamat");
                     deskripsiLaporan = data.getString("deskripsi");
                     lat = data.getString("lat");
@@ -139,7 +140,7 @@ public class DetailLaporanActivity extends AppCompatActivity {
 
                     judulText.setText(judulLaooran);
                     pelaporText.setText(pelapor);
-                    tanggalText.setText(tanggalLaporan);
+//                    tanggalText.setText(tanggalLaporan);
                     alamatText.setText(alamatLaporan);
                     deskripsiText.setText(deskripsiLaporan);
 
